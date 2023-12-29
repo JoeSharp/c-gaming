@@ -1,4 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+int getTerminalRows() {
+  char * rows = getenv("ROWS");
+  printf("Rows: %s", rows);
+  return 1;
+}
+int getTerminalColumns() {
+  char * columns = getenv("COLUMNS");
+  printf("Columns: %s", columns);
+  return 1;
+}
 
 void hideCursor() {
   printf("\033[?25l");

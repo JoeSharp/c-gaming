@@ -1,3 +1,5 @@
+int getTerminalRows();
+int getTerminalColumns();
 void hideCursor();
 void showCursor();
 void moveCursor(int pos[2]);
