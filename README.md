@@ -1,1 +1,1 @@
-# c--gaming
+# c-gaming
