@@ -1,5 +1,8 @@
-int getTerminalRows();
-int getTerminalColumns();
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
+
+struct winsize getTerminal();
 void hideCursor();
 void showCursor();
 void moveCursor(int pos[2]);

@@ -1,15 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
 
-int getTerminalRows() {
-  char * rows = getenv("ROWS");
-  printf("Rows: %s", rows);
-  return 1;
-}
-int getTerminalColumns() {
-  char * columns = getenv("COLUMNS");
-  printf("Columns: %s", columns);
-  return 1;
+struct winsize getTerminal() {
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w;
 }
 
 void hideCursor() {

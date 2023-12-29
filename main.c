@@ -3,11 +3,11 @@
 
 int main() {
   clear();
-  int rows = getTerminalRows();
-  int cols = getTerminalColumns();
+  struct winsize w = getTerminal();
   int pos[2] = {2, 2};
   moveCursor(pos);
-  draw("Foo");
-  printf("Hello World rows=%d, cols=%d!", rows, cols);
+  draw("Hello World");
+  printf ("lines %d\n", w.ws_row);
+  printf ("columns %d\n", w.ws_col);
   return 0;
 }
