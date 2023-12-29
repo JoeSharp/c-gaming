@@ -2,11 +2,15 @@
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "terminal-utils.h"
 
-struct winsize getTerminal() {
+struct ScreenDim getTerminal() {
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-  return w;
+  struct ScreenDim result;
+  result.rows = w.ws_row;
+  result.cols = w.ws_col;
+  return result;
 }
 
 void hideCursor() {
@@ -17,8 +21,8 @@ void showCursor() {
   printf("\033[?25h");
 }
 
-void moveCursor(int pos[2]) {
-  printf("\033[%d,%dH", pos[0], pos[1]);
+void moveCursor(struct Position pos) {
+  printf("\033[%d;%dH", pos.x, pos.y);
 }
 
 void clear() {

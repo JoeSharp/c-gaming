@@ -1,10 +1,14 @@
-#include <sys/ioctl.h>
-#include <stdio.h>
-#include <unistd.h>
-
-struct winsize getTerminal();
+struct Position {
+	int x;
+	int y;
+};
+struct ScreenDim {
+	int rows;
+	int cols;
+};
+struct ScreenDim getTerminal();
 void hideCursor();
 void showCursor();
-void moveCursor(int pos[2]);
+void moveCursor(struct Position position);
 void clear();
 void draw(char value[]);
