@@ -22,7 +22,7 @@ void showCursor() {
 }
 
 void moveCursor(struct Position pos) {
-  printf("\033[%d;%dH", pos.x, pos.y);
+  printf("\033[%d;%dH", pos.y, pos.x);
 }
 
 void clear() {
@@ -31,4 +31,8 @@ void clear() {
 
 void draw(char value[]) {
   printf("%s", value);
+}
+
+void flush() {
+  fflush(stdout);
 }
