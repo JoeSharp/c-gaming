@@ -29,8 +29,8 @@ void clear() {
   printf("\033[2J");
 }
 
-void draw(char value[]) {
-  printf("%s", value);
+void draw(char value) {
+  printf("%c", value);
 }
 
 void flush() {

@@ -11,5 +11,5 @@ void hideCursor();
 void showCursor();
 void moveCursor(struct Position position);
 void clear();
-void draw(char value[]);
+void draw(char value);
 void flush();
