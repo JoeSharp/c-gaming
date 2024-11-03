@@ -5,6 +5,10 @@
 
 int main() {
   struct GameOfLife gol = createBoard(2,2);
-  drawBoard(gol);
+  for (int i=0; i<4; i++) {
+    drawBoard(&gol);
+    iterateBoard(&gol);
+    sleep(1);
+  }
   return 0;
 }
