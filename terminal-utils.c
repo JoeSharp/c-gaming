@@ -5,11 +5,18 @@
 #include "terminal-utils.h"
 
 struct ScreenDim getTerminal() {
-  struct winsize w;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   struct ScreenDim result;
-  result.rows = w.ws_row;
-  result.cols = w.ws_col;
+#ifdef TIOCGSIZE
+    struct ttysize ts;
+    ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
+    result.cols = ts.ts_cols;
+    result.rows = ts.ts_lines;
+#elif defined(TIOCGWINSZ)
+    struct winsize ts;
+    ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
+    result.cols = ts.ws_col;
+    result.lines = ts.ws_row;
+#endif /* TIOCGSIZE */
   return result;
 }
 
