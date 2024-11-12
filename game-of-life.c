@@ -47,7 +47,7 @@ struct GameOfLife createBoard(int rows, int cols) {
   setBoardValue(&board, 7, 7, 1);
 
   // Spaceship
-  for (int i=0; i < cols; i += 7) {
+  for (int i=0; i < cols; i += 5) {
     setBoardValue(&board, 8 + i, 1, 1);
     setBoardValue(&board, 9 + i, 2, 1);
     setBoardValue(&board, 10 + i, 0, 1);

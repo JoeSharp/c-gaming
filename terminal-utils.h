@@ -1,3 +1,6 @@
+#ifndef TERMINAL_UTILS_H
+#define TERMINAL_UTILS_H
+
 struct Position {
 	int x;
 	int y;
@@ -13,3 +16,5 @@ void moveCursor(struct Position position);
 void clear();
 void draw(char value);
 void flush();
+
+#endif
