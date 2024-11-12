@@ -2,12 +2,12 @@
 #define TERMINAL_UTILS_H
 
 struct Position {
-	int x;
-	int y;
+	int row;
+	int column;
 };
 struct ScreenDim {
 	int rows;
-	int cols;
+	int columns;
 };
 struct ScreenDim getTerminal();
 void hideCursor();

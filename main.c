@@ -7,17 +7,16 @@
 #include <unistd.h>
 
 int main() {
-  struct GridFile file = loadGridFile("./structures/beacon.txt");
-  printf("PRINTING\n");
-  printGridFile(&file);
-  printf("PRINTED\n");
-  freeGridFile(&file);
-
-  exit(0);
-
+  struct GridFile gridFile = loadGridFile("./structures/beacon.txt", '-');
   struct ScreenDim terminal = getTerminal();
 
-  struct GameOfLife gol = createBoard(terminal.rows,terminal.cols);
+  struct GameOfLife gol = createBoard(terminal.rows, terminal.columns);
+  for (int column=0; column<terminal.columns; column+=10) {
+    writeGridToBoard(&gol, &gridFile, 0, column);
+  }
+  flipBoardIndex(&gol);
+  freeGridFile(&gridFile);
+
   while (1) {
     drawBoard(&gol);
     iterateBoard(&gol);

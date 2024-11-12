@@ -5,70 +5,65 @@
 #include "terminal-utils.h"
 
 #define ALIVE 'O'
-#define DEAD ' '
+#define DEAD '.'
 
-int countNeighbours(struct GameOfLife * gol, int x, int y);
-int incrementIfTrue(int count, bool valid, struct GameOfLife * gol, int x, int y);
+int countNeighbours(struct GameOfLife * gol, int row, int column);
+int incrementIfTrue(int count, bool valid, struct GameOfLife * gol, int row, int column);
 int nextState(int currentState, int neighbours);
 
-int getIndex(struct GameOfLife * gol, int index, int x, int y) {
-  return (index * gol->width * gol->height) + (x * gol->height) + y;
+int getIndex(struct GameOfLife * gol, int index, int row, int column) {
+  return (index * gol->rows * gol->columns) + (row * gol->columns) + column;
 }
 
 struct GameOfLife createBoard(int rows, int cols) {
   struct GameOfLife board;
   // Ensure the 0th index is filled in, for initial state
   board.index = 0;
-  board.width = cols;
-  board.height = rows;
+  board.rows = rows;
+  board.columns = cols;
+
   int totalSize = sizeof(int) * 2 * rows * cols;
   board.contents = malloc(totalSize);
   for (int index=0; index<2; index++) {
-    for (int x=0; x<board.width; x++) {
-      for (int y=0; y<board.height; y++) {
-        board.contents[getIndex(&board, index, x, y)] = 0;
-        //rand() % 2 == 0 ? 1 : 0;
+    for (int row=0; row<board.rows; row++) {
+      for (int column=0; column<board.columns; column++) {
+        board.contents[getIndex(&board, index, row, column)] = 0;
       }
     }
   }
 
-  board.index = 1;
-  // Blinker
-  setBoardValue(&board, 2, 2, 1);
-  setBoardValue(&board, 2, 3, 1);
-  setBoardValue(&board, 2, 4, 1);
-
-  // Toad
-  setBoardValue(&board, 6, 6, 1);
-  setBoardValue(&board, 6, 7, 1);
-  setBoardValue(&board, 6, 8, 1);
-  setBoardValue(&board, 7, 5, 1);
-  setBoardValue(&board, 7, 6, 1);
-  setBoardValue(&board, 7, 7, 1);
-
-  // Spaceship
-  for (int i=0; i < cols; i += 5) {
-    setBoardValue(&board, 8 + i, 1, 1);
-    setBoardValue(&board, 9 + i, 2, 1);
-    setBoardValue(&board, 10 + i, 0, 1);
-    setBoardValue(&board, 10 + i, 1, 1);
-    setBoardValue(&board, 10 + i, 2, 1);
-  }
-
-  // Switch back to first index
-  board.index = 0;
-
   return board;
 }
 
-int getBoardValue(struct GameOfLife * gol, int x, int y) {
-  int i = getIndex(gol, gol->index, x, y);
+void writeGridToBoard(struct GameOfLife * gol, 
+                      struct GridFile * gridFile, 
+                      int startRow, 
+                      int startColumn) {
+  if (gridFile->rows + startRow > gol->rows) {
+    printf("Cannot write to such a high row");
+    exit(1);
+  }
+  if (gridFile->columns + startColumn > gol->columns) {
+    printf("Cannot write to such a high column");
+    exit(1);
+  }
+
+  for (int row=0; row<gridFile->rows; row++) {
+    for (int column=0; column<gridFile->columns; column++) {
+      int value = gridFile->contents[row][column] == ALIVE ? 1 : 0;
+      setBoardValue(gol, startRow + row, startColumn + column, value);
+    }
+  }
+}
+
+int getBoardValue(struct GameOfLife * gol, int row, int column) {
+  int i = getIndex(gol, gol->index, row, column);
   return gol->contents[i];
 }
 
-void setBoardValue(struct GameOfLife * gol, int x, int y, int value) {
+void setBoardValue(struct GameOfLife * gol, int row, int column, int value) {
   int otherIndex = gol->index == 0 ? 1 : 0;
-  int i = getIndex(gol, otherIndex, x, y);
+  int i = getIndex(gol, otherIndex, row, column);
   gol->contents[i] = value;
 }
 
@@ -79,12 +74,12 @@ void destroyBoard(struct GameOfLife * gol) {
 void drawBoard(struct GameOfLife * gol) {
   struct Position pos;
   clear();
-  for (int x=0; x<gol->width; x++) {
-    pos.x = x;
-    for (int y=0; y<gol->height; y++) {
-      pos.y = y;
+  for (int row=0; row<gol->rows; row++) {
+    pos.row = row;
+    for (int column=0; column<gol->columns; column++) {
+      pos.column = column;
       moveCursor(pos);
-      if (getBoardValue(gol, x, y) > 0) {
+      if (getBoardValue(gol, row, column) > 0) {
         draw(ALIVE);
       } else {
         draw(DEAD);
@@ -95,15 +90,15 @@ void drawBoard(struct GameOfLife * gol) {
 }
 
 void iterateBoard(struct GameOfLife * gol) {
-  int otherIndex = gol->index == 0 ? 1 : 0;
-  for (int x=0; x<gol->width; x++) {
-    for (int y=0; y<gol->height; y++) {
-      int neighbours = countNeighbours(gol, x, y);
-      int currentState = getBoardValue(gol, x, y);
-      setBoardValue(gol, x, y, nextState(currentState, neighbours));
+  for (int row=0; row<gol->rows; row++) {
+    for (int column=0; column<gol->columns; column++) {
+      int neighbours = countNeighbours(gol, row, column);
+      int currentState = getBoardValue(gol, row, column);
+      setBoardValue(gol, row, column, nextState(currentState, neighbours));
     }
   }
-  gol->index = otherIndex;
+
+  flipBoardIndex(gol);
 }
 
 int nextState(int currentState, int neighbours) {
@@ -125,31 +120,34 @@ int nextState(int currentState, int neighbours) {
   
 }
 
+void flipBoardIndex(struct GameOfLife * gol) {
+  gol->index = gol->index == 0 ? 1 : 0;
+}
 
-int incrementIfTrue(int count, bool valid, struct GameOfLife * gol, int x, int y) {
+int incrementIfTrue(int count, bool valid, struct GameOfLife * gol, int row, int column) {
   if (!valid) return count;
-  if (getBoardValue(gol, x, y) > 0) return count + 1;
+  if (getBoardValue(gol, row, column) > 0) return count + 1;
   return count;
 }
 
-int countNeighbours(struct GameOfLife * gol, int x, int y) {
+int countNeighbours(struct GameOfLife * gol, int row, int column) {
   int count = 0;
 
-  bool onFarLeft = x == 0;
-  bool onFarRight = x == gol->width - 1;
-  bool onTop = y == 0;
-  bool onBottom = y == gol->height - 1;
+  bool onFarLeft = column == 0;
+  bool onFarRight = column == gol->columns - 1;
+  bool onTop = row == 0;
+  bool onBottom = row == gol->rows - 1;
 
-  count = incrementIfTrue(count, !(onFarLeft || onTop), gol, x-1, y-1);
-  count = incrementIfTrue(count, !onFarLeft, gol, x-1, y);
-  count = incrementIfTrue(count, !(onFarLeft || onBottom), gol, x-1, y+1);
+  count = incrementIfTrue(count, !(onTop || onFarLeft), gol, row - 1, column - 1);
+  count = incrementIfTrue(count, !onFarLeft, gol, row, column - 1);
+  count = incrementIfTrue(count, !(onBottom || onFarLeft), gol, row + 1, column - 1);
   
-  count = incrementIfTrue(count, !onTop, gol, x, y-1);  
-  count = incrementIfTrue(count, !onBottom, gol, x, y+1);
+  count = incrementIfTrue(count, !onTop, gol, row - 1, column);  
+  count = incrementIfTrue(count, !onBottom, gol, row + 1, column);
   
-  count = incrementIfTrue(count, !(onFarRight || onTop), gol, x+1, y-1);
-  count = incrementIfTrue(count, !onFarRight, gol, x+1, y);
-  count = incrementIfTrue(count, !(onFarRight || onBottom), gol, x+1, y+1);
+  count = incrementIfTrue(count, !(onTop || onFarRight), gol, row - 1, column + 1);
+  count = incrementIfTrue(count, !onFarRight, gol, row, column + 1);
+  count = incrementIfTrue(count, !(onBottom || onFarRight), gol, row + 1, column + 1);
 
   return count;
 }

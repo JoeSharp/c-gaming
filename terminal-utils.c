@@ -9,12 +9,12 @@ struct ScreenDim getTerminal() {
 #ifdef TIOCGSIZE
     struct ttysize ts;
     ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
-    result.cols = ts.ts_cols;
+    result.columns = ts.ts_cols;
     result.rows = ts.ts_lines;
 #elif defined(TIOCGWINSZ)
     struct winsize ts;
     ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
-    result.cols = ts.ws_col;
+    result.columns = ts.ws_col;
     result.lines = ts.ws_row;
 #endif /* TIOCGSIZE */
   return result;
@@ -29,7 +29,7 @@ void showCursor() {
 }
 
 void moveCursor(struct Position pos) {
-  printf("\033[%d;%dH", pos.y, pos.x);
+  printf("\033[%d;%dH", pos.row, pos.column);
 }
 
 void clear() {
