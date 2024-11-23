@@ -18,6 +18,7 @@ struct Sudoku {
 
 struct Sudoku * loadSudoku(char * filename);
 struct Sudoku * createSudoku();
+void printGrid();
 void printSudoku(struct Sudoku * sudoku);
 void cleanSudoku(struct Sudoku * sudoku);
 

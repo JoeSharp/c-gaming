@@ -30,6 +30,18 @@ void showCursor() {
   printf("\033[?25h");
 }
 
+void clearTerminal(struct ScreenDim screenDim) {
+  struct Position pos;
+  for (int row=1; row<=screenDim.rows; row++) {
+    for (int col=1; col<=screenDim.columns; col++) {
+      pos.row = row;
+      pos.column = col;
+      moveCursor(pos);
+      draw(' ');
+    }
+  }
+}
+
 void moveCursor(struct Position pos) {
   printf("\033[%d;%dH", pos.row, pos.column);
 }

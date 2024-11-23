@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
 #include "terminal-utils.h"
 #include "game-of-life.h"
@@ -8,7 +7,7 @@
 #include <unistd.h>
 
 void runGameOfLife(struct ScreenDim * terminal) {
-  struct GridFile gridFile = loadGridFile("./structures/beacon.txt", '-');
+  struct GridFile gridFile = loadGridFile("./structures/pentadecathalon.txt", '-');
 
   struct GameOfLife gol = createBoard(terminal->rows, terminal->columns);
   for (int column=0; column<terminal->columns; column+=10) {
@@ -27,6 +26,7 @@ void runGameOfLife(struct ScreenDim * terminal) {
 void runSudoku(struct ScreenDim * terminal) {
 
   printf("Running Sudoku Program\n");
+  printGrid();
   struct Sudoku * sudoku = createSudoku();
   printSudoku(sudoku);
   cleanSudoku(sudoku);
@@ -34,8 +34,10 @@ void runSudoku(struct ScreenDim * terminal) {
 
 int main() {
   struct ScreenDim terminal = getTerminal();
+  clearTerminal(terminal);
 
   runSudoku(&terminal);
+  //runGameOfLife(&terminal);
 
   return 0;
 }

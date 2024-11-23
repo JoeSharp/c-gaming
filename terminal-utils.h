@@ -10,6 +10,7 @@ struct ScreenDim {
 	int columns;
 };
 struct ScreenDim getTerminal();
+void clearTerminal(struct ScreenDim screenDim);
 void hideCursor();
 void showCursor();
 void moveCursor(struct Position position);
