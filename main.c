@@ -3,17 +3,15 @@
 #include <sys/ioctl.h>
 #include "terminal-utils.h"
 #include "game-of-life.h"
+#include "sudoku.h"
 #include "file-utils.h"
 #include <unistd.h>
 
-int main() {
+void runGameOfLife(struct ScreenDim * terminal) {
   struct GridFile gridFile = loadGridFile("./structures/beacon.txt", '-');
-  struct ScreenDim terminal = getTerminal();
-  printf("Terminal is %d by %d", terminal.rows, terminal.columns);
-  //exit(1);
 
-  struct GameOfLife gol = createBoard(terminal.rows, terminal.columns);
-  for (int column=0; column<terminal.columns; column+=10) {
+  struct GameOfLife gol = createBoard(terminal->rows, terminal->columns);
+  for (int column=0; column<terminal->columns; column+=10) {
     writeGridToBoard(&gol, &gridFile, 0, column);
   }
   flipBoardIndex(&gol);
@@ -24,5 +22,20 @@ int main() {
     iterateBoard(&gol);
     sleep(1);
   }
+}
+
+void runSudoku(struct ScreenDim * terminal) {
+
+  printf("Running Sudoku Program\n");
+  struct Sudoku * sudoku = createSudoku();
+  printSudoku(sudoku);
+  cleanSudoku(sudoku);
+}
+
+int main() {
+  struct ScreenDim terminal = getTerminal();
+
+  runSudoku(&terminal);
+
   return 0;
 }
