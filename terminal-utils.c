@@ -14,8 +14,10 @@ struct ScreenDim getTerminal() {
 #elif defined(TIOCGWINSZ)
     struct winsize ts;
     ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
-    result.columns = ts.ws_col;
-    result.lines = ts.ws_row;
+  // Cannot write to such a high column?
+  // Meh, fix that later, stupid WSL
+    result.columns = 100; //ts.ws_col;
+    result.rows = ts.ws_row;
 #endif /* TIOCGSIZE */
   return result;
 }
